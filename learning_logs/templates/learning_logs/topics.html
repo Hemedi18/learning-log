@@ -1,0 +1,21 @@
+{% extends 'learning_logs/base.html' %}
+
+{% block page_header %}
+   <h1 class="display-4"><i class="fas fa-list-ul"></i> Topics</h1>
+{% endblock page_header %}
+
+{% block content %}
+   <div class="list-group">
+      {% for topic in topics %}
+         <a href="{% url 'learning_logs:topic' topic.id %}" class="list-group-item list-group-item-action glass-effect mb-2">
+            <h5 class="mb-1"><i class="fas fa-book"></i> {{ topic }}</h5>
+         </a>
+      {% empty %}
+          <div class="alert alert-info glass-effect" role="alert">
+            No topics have been added yet.
+          </div>
+      {% endfor %}
+   </div>
+   <hr>
+   <a href="{% url 'learning_logs:new_topic' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Add a new topic</a>
+{% endblock content %}

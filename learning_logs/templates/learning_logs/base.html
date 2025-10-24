@@ -1,0 +1,81 @@
+{% comment %} <p>
+   <a href="{% url 'learning_logs:index' %}">Learning Log</a>
+   <a href="{% url 'learning_logs:topics' %}">Topics</a> - 
+   {% if user.is_authenticated %}
+      Hello, {{ user.username }}.
+      <a href="{% url 'users:logout' %}">Log out</a>
+   {% else %}
+      <a href="{% url 'users:register' %}">Register</a>
+      <a href="{% url 'users:login' %}">Log in</a>
+   {% endif %}
+</p>
+
+   {% block content %}{% endblock content %} {% endcomment %}
+
+{% load bootstrap4 %}
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1,
+   shrink-to-fit=no">
+   <title>Learning Log</title>
+   {% bootstrap_css %}
+   <!-- Font Awesome for icons -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+   <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body>
+   <nav class="navbar navbar-expand-md navbar-light mb-4 border glass-effect">
+   <a class="navbar-brand" href="{% url 'learning_logs:index'%}"><i class="fas fa-book-open"></i> Learning Log</a>
+   <button class="navbar-toggler" type="button" data-toggle="collapse"
+   data-target="#navbarCollapse" aria-controls="navbarCollapse"
+   aria-expanded="false" aria-label="Toggle navigation">
+   <span class="navbar-toggler-icon"></span></button>
+   
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+         <li class="nav-item">
+         <a class="nav-link" href="{% url 'learning_logs:topics'%}" title="Topics"><i class="fas fa-list-ul"></i> Topics</a></li>
+         <li class="nav-item">
+            <a class="nav-link" href="{% url 'learning_logs:index' %}#about" title="About"><i class="fas fa-info-circle"></i> About</a>
+         </li>
+         <li class="nav-item">
+            <a class="nav-link" href="{% url 'learning_logs:index' %}#contact" title="Contact"><i class="fas fa-envelope"></i> Contact</a>
+         </li>
+      </ul>
+      <ul class="navbar-nav ml-auto">
+         {% if user.is_authenticated %}
+         <li class="nav-item">
+         <span class="navbar-text mr-3">Hello, {{ user.username }}.</span></li>
+         <li class="nav-item">
+            <a class="nav-link" href="{% url 'users:logout' %}" title="Log out"><i class="fas fa-sign-out-alt"></i></a>
+         </li>
+         {% else %}
+         <li class="nav-item">
+            <a class="nav-link" href="{% url 'users:login' %}" title="Log in"><i class="fas fa-sign-in-alt"></i></a>
+         </li>
+         {% endif %}
+         <button id="theme-toggle" class="theme-toggle">🌙</button>
+      </ul> 
+      </div>
+   </nav>
+
+   <main role="main" class="container fade-in">
+   <div class="pb-2 mb-2">
+      {% block page_header %}{% endblock page_header %}
+   </div>
+   <div class="content-body">
+      {% block content %}{% endblock content %}
+   </div>
+   </main>
+   <footer class="footer mt-auto py-3 border-top glass-effect">
+      <div class="container text-center">
+         <span class="text-muted">&copy; <span id='time'></span> Learning Log</span>
+      </div>
+   </footer>
+   {% bootstrap_javascript jquery='full' %}
+   <script src={% static 'js/theme-toggle.js' %}></script>
+</body>
+</html>

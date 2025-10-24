@@ -1,0 +1,41 @@
+# Gitignore file for a Django project.
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Database
+# Ignore the development database.
+db.sqlite3
+*.sqlite3
+
+# Django
+# Ignore log files and local settings.
+*.log
+local_settings.py
+
+# Static and Media files
+# These are typically generated or collected during deployment.
+# If you have user-uploaded content in /media, you should not track it.
+/media/
+
+# IDE and editor configuration files
+.idea/
+.vscode/
+*.swp
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+# Never commit your .env files.
+.env
+.env.*

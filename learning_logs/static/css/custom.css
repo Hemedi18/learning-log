@@ -1,0 +1,178 @@
+/* General Body Styling & Theme Variables */
+:root {
+    --bg-color: #f0f2f5;
+    --text-color: #1c1e21;
+    --card-bg-color: rgba(255, 255, 255, 0.65); /* Increased opacity */
+    --navbar-bg-color: rgba(255, 255, 255, 0.75); /* Increased opacity */
+    --border-color: rgba(255, 255, 255, 0.6);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --link-color: #02db1b;
+    --link-hover-color: #0056b3;
+    --body-bg-image: linear-gradient(to right top, #00706c, #008864);
+}
+
+.dark-mode {
+    --bg-color: #121212;
+    --text-color: #e4e6eb;
+    --card-bg-color: rgba(30, 30, 30, 0.65); /* Increased opacity */
+    --navbar-bg-color: rgba(30, 30, 30, 0.75); /* Increased opacity */
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --link-color: #4dabf7;
+    --link-hover-color: #74c0fc;
+    --body-bg-image: linear-gradient(to right top, #0d1b2a, #1b263b, #2a324b, #3a3d5a, #4a4969);
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    background-image: var(--body-bg-image);
+    background-attachment: fixed;
+    background-size: cover;
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0; /* Remove default body margin */
+}
+
+/* Glassmorphism Base Style */
+.glass-effect {
+    background: var(--card-bg-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 30px var(--shadow-color);
+    transition: background 0.3s ease, border 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+main.container {
+    flex-grow: 1; /* Allow main content to grow and push footer down */
+}
+
+/* Component Styling */
+.navbar.glass-effect {
+    background: var(--navbar-bg-color);
+}
+
+.jumbotron.glass-effect {
+    background: transparent; /* Jumbotron has its own bg, make it transparent */
+    padding: 4rem 2rem;
+}
+
+.card.glass-effect {
+    background: var(--card-bg-color);
+}
+
+.card.glass-effect .card-header {
+    background-color: rgba(0,0,0,0.05);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Form Styling */
+form {
+    padding: 2rem;
+    margin-top: 1rem;
+}
+
+form.glass-effect {
+    background: var(--card-bg-color);
+}
+
+.form-control {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: var(--text-color);
+    border-color: var(--link-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.dark-mode .form-control {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .form-control:focus {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Navbar user text styling */
+.navbar-text {
+    font-weight: 500;
+    padding: 0.3rem 0.8rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+.dark-mode .navbar-text {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    cursor: pointer;
+    font-size: 1.25rem;
+    line-height: 1.5rem;
+    margin-left: 1rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+}
+
+/* General Links */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
+
+
+.list-unstyled a {
+    text-decoration: none; /* Remove underline from contact links */
+}
+
+h1,h2,h3,h4,h5,h6 {
+    color: rgb(64, 165, 5);
+    font-weight: 600;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 768px) {
+    h1, .display-4 {
+        font-size: 2.5rem; /* Default is 3.5rem or 4.5rem */
+    }
+
+    h3, .display-5 {
+        font-size: 1.5rem; /* Default is 1.75rem or 2.5rem */
+    }
+
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    /* Reduce padding on glass elements for more space */
+    .glass-effect, form.glass-effect {
+        padding: 1.25rem;
+    }
+}
