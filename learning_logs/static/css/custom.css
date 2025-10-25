@@ -1,3 +1,7 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 /* General Body Styling & Theme Variables */
 :root {
     --bg-color: #f0f2f5;
@@ -12,11 +16,11 @@
 }
 
 .dark-mode {
-    --bg-color: #121212;
-    --text-color: #e4e6eb;
+    --bg-color: #fff7f7;
+    --text-color: #fcfdff;
     --card-bg-color: rgba(30, 30, 30, 0.65); /* Increased opacity */
-    --navbar-bg-color: rgba(30, 30, 30, 0.75); /* Increased opacity */
-    --border-color: rgba(255, 255, 255, 0.1);
+    --navbar-bg-color: rgba(73, 68, 68, 0.75); /* Increased opacity */
+    --border-color: rgba(220, 208, 208, 0.1);
     --shadow-color: rgba(0, 0, 0, 0.3);
     --link-color: #4dabf7;
     --link-hover-color: #74c0fc;
@@ -24,6 +28,8 @@
 }
 
 body {
+    font-family: 'Libre Bodoni', serif;
+    font-size: 1rem;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
@@ -34,6 +40,7 @@ body {
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
     margin: 0; /* Remove default body margin */
+    padding-top: 80px; /* Add padding to body to offset fixed navbar */
 }
 
 /* Glassmorphism Base Style */
@@ -47,12 +54,24 @@ body {
     transition: background 0.3s ease, border 0.3s ease;
 }
 
+/* Card Hover Animation */
+.card.glass-effect {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.glass-effect:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 40px var(--shadow-color);
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Staggered animation for topic cards */
+.topic-card { animation: fadeIn 0.5s ease-in-out forwards; opacity: 0; }
 .fade-in {
     animation: fadeIn 0.5s ease-in-out forwards;
 }
@@ -64,11 +83,6 @@ main.container {
 /* Component Styling */
 .navbar.glass-effect {
     background: var(--navbar-bg-color);
-}
-
-.jumbotron.glass-effect {
-    background: transparent; /* Jumbotron has its own bg, make it transparent */
-    padding: 4rem 2rem;
 }
 
 .card.glass-effect {
@@ -126,7 +140,7 @@ form.glass-effect {
 
 /* Theme Toggle Button */
 .theme-toggle {
-    cursor: pointer;
+    cursor: pointer; 
     font-size: 1.25rem;
     line-height: 1.5rem;
     margin-left: 1rem;
@@ -153,26 +167,132 @@ a:hover {
 }
 
 h1,h2,h3,h4,h5,h6 {
-    color: rgb(64, 165, 5);
-    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: 0.5px; /* Adds a touch of elegance */
+}
+
+/* Specific font for topic titles */
+.topics-grid .card-title {
+    font-family: 'Irish Grover', cursive;
+    font-size: 1.3rem; /* Make it a bit larger */
+}
+
+/* Mobile Off-canvas Menu */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Start off-screen */
+    width: 280px;
+    height: 100%;
+    background: var(--navbar-bg-color);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+    transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1050;
+    padding: 60px 20px 20px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu.open {
+    right: 0;
+}
+
+.mobile-menu .navbar-nav {
+    width: 100%;
+}
+
+.mobile-menu .nav-link {
+    font-size: 1.2rem;
+    padding: 1rem 0;
+}
+
+.mobile-menu .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 2.5rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.mobile-menu .theme-toggle {
+    margin-top: auto; /* Pushes theme toggle to the bottom */
+    align-self: center;
+    font-size: 1.5rem;
 }
 
 /* Responsive Design for Mobile */
 @media (max-width: 768px) {
+    body { padding-top: 60px; } /* Adjust body padding for smaller navbar */
+
+    .navbar {
+        padding-top: 0.3rem !important;
+        padding-bottom: 0.3rem !important;
+    }
+    .navbar-brand {
+        font-size: 1.1rem; /* Reduce brand font size */
+    }
+
     h1, .display-4 {
-        font-size: 2.5rem; /* Default is 3.5rem or 4.5rem */
+        font-size: 2.1rem; /* Default is 3.5rem or 4.5rem */
     }
 
     h3, .display-5 {
-        font-size: 1.5rem; /* Default is 1.75rem or 2.5rem */
-    }
-
-    .navbar-brand {
-        font-size: 1.1rem;
+        font-size: 1.1rem; /* Default is 1.75rem or 2.5rem */
     }
 
     /* Reduce padding on glass elements for more space */
     .glass-effect, form.glass-effect {
         padding: 1.25rem;
+    }
+
+    .jumbotron.glass-effect {
+        padding: 1.25rem;
+    }
+
+    .footer {
+        padding-top: 0.75rem !important; /* Override Bootstrap's py-3 */
+        padding-bottom: 0.75rem !important;
+    }
+
+    .footer .text-muted {
+        font-size: 0.8rem;
+    }
+
+    /* On mobile, remove card material for maximum space */
+    .topics-grid .card.glass-effect {
+        background: transparent !important; /* Remove background */
+        backdrop-filter: none !important; /* Remove blur */
+        -webkit-backdrop-filter: none !important;
+        border: none !important; /* Remove border */
+        box-shadow: none !important; /* Remove shadow */
+    }
+
+    /* Remove padding inside the card body on mobile */
+    .topics-grid .card.glass-effect .card-body {
+        padding: 0 !important;
+    }
+
+    /* Reduce gutters on mobile for more card space */
+    .topics-grid .col-6 {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    /* Improve alignment of entry action buttons on mobile */
+    .card-header.d-flex {
+        flex-wrap: wrap; /* Allow items to wrap to the next line */
+    }
+
+    .card-header .d-flex > div {
+        width: 100%; /* Make the button container take full width */
+        text-align: right; /* Align buttons to the right */
+        margin-top: 0.5rem; /* Add some space above the buttons */
     }
 }

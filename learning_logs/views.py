@@ -105,3 +105,11 @@ def delete_entry(request, entry_id):
         return redirect('learning_logs:topic', topic_id=topic.id)
 
     return redirect('learning_logs:topic', topic_id=topic.id)
+
+def about(request):
+    """Show the about page."""
+    return render(request, 'learning_logs/about.html')
+
+def contact(request):
+    """Show the contact page."""
+    return render(request, 'learning_logs/contact.html')

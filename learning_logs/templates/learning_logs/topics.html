@@ -5,15 +5,22 @@
 {% endblock page_header %}
 
 {% block content %}
-   <div class="list-group">
+   <div class="row topics-grid">
       {% for topic in topics %}
-         <a href="{% url 'learning_logs:topic' topic.id %}" class="list-group-item list-group-item-action glass-effect mb-2">
-            <h5 class="mb-1"><i class="fas fa-book"></i> {{ topic }}</h5>
-         </a>
+         <div class="col-6 col-md-6 col-lg-4 mb-4 topic-card" style="animation-delay: {% widthratio forloop.counter0 1 50 %}ms;">
+            <div class="card h-100 glass-effect ">
+               <div class="card-body d-flex flex-column">
+                  <h5 class="card-title"><i class="fas fa-book"></i> {{ topic.text }}</h5>
+                  <a href="{% url 'learning_logs:topic' topic.id %}" class="btn btn-outline-primary mt-auto">View Topic</a>
+               </div>
+            </div>
+         </div>
       {% empty %}
-          <div class="alert alert-info glass-effect" role="alert">
+          <div class="col">
+            <div class="alert alert-info glass-effect" role="alert">
             No topics have been added yet.
           </div>
+         </div>
       {% endfor %}
    </div>
    <hr>
