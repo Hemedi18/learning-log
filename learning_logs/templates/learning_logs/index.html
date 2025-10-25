@@ -16,6 +16,9 @@
             <li><strong>Knowledge Sharing:</strong> Facilitating collaboration and learning from others' logs (when shared publicly).</li>
         </ul>
         <p>Start tracking your progress and documenting your success with us today!</p>
+        {% if not user.is_authenticated %}
+          <a class="btn btn-lg btn-primary" href="{% url 'users:register' %}"role="button">Register &raquo;</a>
+        {% endif %}
       </div>
     
     {% comment %} <div >
