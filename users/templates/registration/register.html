@@ -1,13 +1,11 @@
 {% extends "learning_logs/base.html" %}
-{% load bootstrap4 %}
 
 {% block content %}
  <form method="post" action="{% url 'users:register' %}" class="form glass-effect">
   {% csrf_token %}
-  {% bootstrap_form form %}
-  {% buttons %}
-    <button name="submit" class="btn btn-primary">Register</button>
-  {% endbuttons %}
+  {{ form.as_p }}
+
+  <button name="submit" class="btn">Register</button>
   <input type="hidden" name="next" value="{% url 'learning_logs:index' %}" />
  </form>
  

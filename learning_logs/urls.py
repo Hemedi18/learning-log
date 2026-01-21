@@ -1,4 +1,4 @@
-"""Defines URL patterns for learning_logs."""
+"""Defines URL patterns for Personal Management."""
 from django.urls import path
 from . import views
 
@@ -23,4 +23,17 @@ urlpatterns = [
   path('about/', views.about, name='about'),
   # Contact page
   path('contact/', views.contact, name='contact'),
+  # ... inside urlpatterns ...
+  path('dashboard/', views.dashboard, name='dashboard'),
+  # Finance Management URLs
+  path('expenses/', views.expenses, name='expenses'),
+  path('new_expense/', views.new_expense, name='new_expense'),
+  path('edit_expense/<int:expense_id>/', views.edit_expense, name='edit_expense'),
+  path('delete_expense/<int:expense_id>/', views.delete_expense, name='delete_expense'),
+  # Income & Goals
+  path('financial_goals/', views.financial_goals, name='financial_goals'),
+  path('new_income/', views.new_income, name='new_income'),
+  # Recurring Expenses
+  path('new_recurring_expense/', views.new_recurring_expense, name='new_recurring_expense'),
+  path('delete_recurring_expense/<int:expense_id>/', views.delete_recurring_expense, name='delete_recurring_expense'),
 ]

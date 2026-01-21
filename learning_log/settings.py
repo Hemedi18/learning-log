@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nh!f*$k=dgxy_6v(j(6d(3-5-s+cx13bg5(0cow*v^9z3h8=p7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['.pythonanywhere.com', 'localhost', '127.0.0.1','0.0.0.0']
 
 
 # Application definition
@@ -35,9 +35,6 @@ INSTALLED_APPS = [
     'learning_logs',
     'users',
 
-    # Third party apps.
-    'bootstrap4',
-    
     # default appps
     'django.contrib.admin',
     'django.contrib.auth',

@@ -1,26 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
+    const themeToggles = document.querySelectorAll('.theme-toggle');
     const currentTheme = localStorage.getItem('theme');
     const year = document.getElementById('time');
 
-    year.textContent = new Date().getFullYear();
+    if (year) {
+        year.textContent = new Date().getFullYear();
+    }
+
+    const applyTheme = (theme) => {
+        if (theme === 'dark-mode') {
+            document.body.classList.add('dark-mode');
+            themeToggles.forEach(toggle => toggle.textContent = '☀️');
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggles.forEach(toggle => toggle.textContent = '🌙');
+        }
+    };
 
     // Apply the saved theme on page load
     if (currentTheme) {
-        document.body.classList.add(currentTheme);
-        if (themeToggle) {
-            themeToggle.textContent = currentTheme === 'dark-mode' ? '☀️' : '🌙';
-        }
+        applyTheme(currentTheme);
     }
 
-    if (themeToggle) {
-        themeToggle.addEventListener('click', () => {
+    themeToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
             document.body.classList.toggle('dark-mode');
-
-            let theme = document.body.classList.contains('dark-mode') ? 'dark-mode' : '';
+            const theme = document.body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
             localStorage.setItem('theme', theme);
-            
-            themeToggle.textContent = theme === 'dark-mode' ? '☀️' : '🌙';
+            applyTheme(theme);
         });
-    }
+    });
 });

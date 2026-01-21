@@ -1,20 +1,110 @@
-{% extends 'learning_logs/base.html' %}
+{% extends "learning_logs/base.html" %}
 
-{% block page_header %}
-  {% if not user.is_authenticated %}
-    <div class="jumbotron glass-effect">
-      <h1 class="display-4">Track your learning.</h1>
-      <p class="lead">Make your own Learning Log, and keep a list of the topics you're learning about. Whenever you learn something new about a topic, make an entry summarizing what you've learned.</p>
-      <a class="btn btn-lg btn-primary" href="{% url 'users:register' %}"role="button">Register &raquo;</a>
-    </div>
-  {% endif %}
+{% block content %}
+<div class="container animate-fade-in">
+    {% if user.is_authenticated %}
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-5">Karibu, {{ user.username }}!</h1>
+                <p class="text-muted">Hapa kuna muhtasari wa siku yako.</p>
+            </div>
+        </div>
 
-  {% if  user.is_authenticated %}
-    <div class="jumbotron glass-effect">
-      <h1 class="display-4">Welcome to Learning Logs!</h1>
-      <p class="lead">Your personal space to document and reflect on your learning journey.</p>
-      <a class="nav-link" href="{% url 'learning_logs:topics'%}" title="Topics"> <button class="btn btn-primary">Topics</button></a>
-      <hr class="my-4">
-      <p>Join our community of learners today. Register now to start tracking your progress and insights.</p>
-  {% endif %}
-{% endblock page_header %}
+        <!-- Notifications -->
+        {% if notifications %}
+        <div class="row mb-4">
+            <div class="col-12">
+                {% for note in notifications %}
+                <div class="alert alert-warning d-flex align-items-center glass-effect border-warning text-warning" role="alert">
+                    <i class="fas fa-bell me-3 fs-4"></i>
+                    <div>
+                        <strong>Kikumbusho:</strong> {{ note }}
+                        <a href="{% url 'learning_logs:new_expense' %}" class="btn btn-sm btn-warning ms-3 text-dark">Weka Sasa</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Financial Snapshot -->
+        <div class="row mb-5">
+            <div class="col-12 mb-3">
+                <h3 class="h4 border-bottom pb-2 border-secondary border-opacity-25">Hali ya Fedha (Mwezi Huu)</h3>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-success border-opacity-25" style="background: rgba(25, 135, 84, 0.05);">
+                    <div class="card-body">
+                        <small class="text-success text-uppercase fw-bold">Mapato</small>
+                        <h3 class="mb-0 mt-1">TZS {{ total_income|floatformat:0 }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-danger border-opacity-25" style="background: rgba(220, 53, 69, 0.05);">
+                    <div class="card-body">
+                        <small class="text-danger text-uppercase fw-bold">Matumizi</small>
+                        <h3 class="mb-0 mt-1">TZS {{ total_expenses|floatformat:0 }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card h-100 border-primary border-opacity-25" style="background: rgba(13, 110, 253, 0.05);">
+                    <div class="card-body">
+                        <small class="text-primary text-uppercase fw-bold">Baki</small>
+                        <h3 class="mb-0 mt-1">TZS {{ balance|floatformat:0 }}</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 text-end">
+                <a href="{% url 'learning_logs:expenses' %}" class="btn btn-sm btn-outline-light">Angalia Ripoti Kamili <i class="fas fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+
+        <!-- Continue Learning -->
+        <div class="row">
+            <div class="col-12 mb-3">
+                <h3 class="h4 border-bottom pb-2 border-secondary border-opacity-25">Endelea Kujifunza</h3>
+            </div>
+            {% for topic in recent_topics %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ topic.text }}</h5>
+                        <p class="card-text text-muted small">
+                            <i class="far fa-clock me-1"></i> 
+                            {% if topic.last_activity %}
+                                Updated: {{ topic.last_activity|date:"M d" }}
+                            {% else %}
+                                Created: {{ topic.date_added|date:"M d" }}
+                            {% endif %}
+                        </p>
+                        <a href="{% url 'learning_logs:topic' topic.id %}" class="btn btn-sm btn-primary mt-auto">
+                            Endelea <i class="fas fa-book-reader ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-muted">Hujaanza kujifunza bado? <a href="{% url 'learning_logs:new_topic' %}">Anza Topic Mpya</a></p>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <!-- Landing Page for Guests -->
+        <div class="p-5 mb-4 rounded-3 glass-effect text-center">
+            <div class="container-fluid py-5">
+                <h1 class="display-4 fw-bold">Personal Management & Finance Tracker</h1>
+                <p class="col-md-8 fs-4 mx-auto">Track your learning progress and manage your personal finances in one beautiful, secure place.</p>
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{% url 'users:register' %}" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="{% url 'users:login' %}" class="btn btn-outline-light btn-lg">Log In</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock content %}

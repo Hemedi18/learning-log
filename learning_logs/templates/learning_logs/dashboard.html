@@ -1,0 +1,82 @@
+{% extends "learning_logs/base.html" %}
+
+{% block content %}
+<div class="container animate-fade-in">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1>Dashboard</h1>
+            <p class="text-muted">Welcome back, {{ user.username }}. Here is your learning overview.</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card h-100">
+            <div class="stat-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ topic_count }}</h3>
+                <p>Total Topics</p>
+            </div>
+        </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card h-100">
+            <div class="stat-icon">
+                <i class="fas fa-pen-fancy"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ entry_count }}</h3>
+                <p>Total Entries</p>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity & Quick Actions -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0" style="font-size: 1.2rem;">Recent Activity</h3>
+                    <a href="{% url 'learning_logs:topics' %}" class="btn btn-sm btn-outline-light">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_entries %}
+                        <ul style="list-style: none; padding: 0;">
+                            {% for entry in recent_entries %}
+                                <li style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); last-child: border-bottom: none;">
+                                    <div style="font-weight: 600; color: var(--primary-color);">{{ entry.topic }}</div>
+                                    <div style="font-size: 0.9rem; color: #ccc;">{{ entry.text|truncatewords:20 }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">{{ entry.date_added|date:"M d, Y" }}</div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No recent activity.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0" style="font-size: 1.2rem;">Quick Actions</h3>
+                </div>
+                <div class="card-body" style="display: flex; flex-direction: column; gap: 15px;">
+                    <a href="{% url 'learning_logs:new_topic' %}" class="btn btn-primary w-100">
+                        <i class="fas fa-plus"></i> New Topic
+                    </a>
+                    <a href="{% url 'learning_logs:topics' %}" class="btn btn-outline-light w-100">
+                        Browse Topics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

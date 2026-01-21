@@ -1,0 +1,253 @@
+{% extends "learning_logs/base.html" %}
+
+{% block page_header %}
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h1>Usimamizi wa Fedha</h1>
+        <p class="text-muted">Fuatilia mapato, matumizi na malengo yako.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2 justify-content-center">
+        <a href="{% url 'learning_logs:financial_goals' %}" class="btn btn-sm btn-outline-light">
+            <i class="fas fa-cog"></i> Mipangilio
+        </a>
+        <a href="{% url 'learning_logs:new_recurring_expense' %}" class="btn btn-sm btn-info text-white">
+            <i class="fas fa-sync-alt"></i> Bills
+        </a>
+        <a href="{% url 'learning_logs:new_income' %}" class="btn btn-sm btn-success text-white">
+            <i class="fas fa-plus"></i> Weka Mapato
+        </a>
+        <a href="{% url 'learning_logs:new_expense' %}" class="btn btn-sm btn-danger text-white">
+            <i class="fas fa-minus"></i> Weka Matumizi
+        </a>
+    </div>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <!-- AI Suggestions Section -->
+  {% if suggestions %}
+  <div class="row mb-4">
+      <div class="col-12">
+          <div class="card border-0" style="background: rgba(255, 255, 255, 0.03);">
+              <div class="card-body">
+                  <h5 class="card-title mb-3"><i class="fas fa-robot text-primary me-2"></i> AI Financial Insights</h5>
+                  <div class="row g-3">
+                      {% for suggestion in suggestions %}
+                      <div class="col-md-6">
+                          <div class="alert alert-{{ suggestion.type }} d-flex align-items-center mb-0" role="alert" style="background-color: rgba(var(--bs-{{ suggestion.type }}-rgb), 0.1); border: 1px solid rgba(var(--bs-{{ suggestion.type }}-rgb), 0.2); color: var(--bs-{{ suggestion.type }});">
+                              <i class="fas {{ suggestion.icon }} me-3 fs-4"></i>
+                              <div>{{ suggestion.text }}</div>
+                          </div>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  {% endif %}
+
+  <!-- Financial Overview Cards -->
+  <div class="row mb-4">
+    <!-- Income Card -->
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card h-100 border-success border-opacity-25" style="background: rgba(25, 135, 84, 0.1);">
+            <div class="card-body">
+                <h6 class="text-success text-uppercase mb-2">Jumla ya Mapato (Mwezi huu)</h6>
+                <h3 class="fw-bold mb-0">TZS {{ total_income|floatformat:0 }}</h3>
+                <small class="text-muted">Makadirio: TZS {{ projected_income|floatformat:0 }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses Card -->
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card h-100 border-danger border-opacity-25" style="background: rgba(220, 53, 69, 0.1);">
+            <div class="card-body">
+                <h6 class="text-danger text-uppercase mb-2">Jumla ya Matumizi</h6>
+                <h3 class="fw-bold mb-0">TZS {{ total_expenses|floatformat:0 }}</h3>
+                <small class="text-muted">Leo: TZS {{ today_expenses|floatformat:0 }}</small>
+                {% if daily_limit_status == "Exceeded" %}
+                    <div class="badge bg-danger mt-2">Umezidi Bajeti ya Siku!</div>
+                {% else %}
+                    <div class="badge bg-success mt-2">Ndani ya Bajeti ya Siku</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Balance/Goals Card -->
+    <div class="col-md-12 col-lg-4 mb-3">
+        <div class="card h-100 border-primary border-opacity-25" style="background: rgba(13, 110, 253, 0.1);">
+            <div class="card-body">
+                <h6 class="text-primary text-uppercase mb-2">Baki (Akiba)</h6>
+                <h3 class="fw-bold mb-0">TZS {{ balance|floatformat:0 }}</h3>
+                <div class="mt-2">
+                    <small class="text-muted">Lengo la Akiba: TZS {{ goals.savings_goal|floatformat:0 }}</small>
+                    {% if balance >= goals.savings_goal %}
+                        <span class="text-success"><i class="fas fa-check-circle"></i> Umefikia Lengo!</span>
+                    {% else %}
+                        <span class="text-warning"><i class="fas fa-exclamation-circle"></i> Bado hujafikia</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <div class="row mb-4">
+      <!-- Chart Section -->
+      <div class="col-lg-8 mb-4">
+          <div class="card h-100">
+              <div class="card-header">
+                  <h5 class="mb-0">Mwenendo wa Matumizi (Siku 7 Zilizopita)</h5>
+              </div>
+              <div class="card-body">
+                  <div style="height: 300px; position: relative;">
+                      <canvas id="expensesChart"></canvas>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Pie Chart Section -->
+      <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+              <div class="card-header">
+                  <h5 class="mb-0">Matumizi kwa Kundi</h5>
+              </div>
+              <div class="card-body">
+                  <div style="height: 300px; position: relative;">
+                      <canvas id="categoryChart"></canvas>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="row mb-4">
+      <!-- Recurring Expenses List -->
+      <div class="col-12 mb-4">
+          <div class="card h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                  <h5 class="mb-0">Matumizi ya Kudumu</h5>
+                  <a href="{% url 'learning_logs:new_recurring_expense' %}" class="btn btn-sm btn-outline-light"><i class="fas fa-plus"></i></a>
+              </div>
+              <div class="card-body p-0">
+                  <ul class="list-group list-group-flush bg-transparent">
+                      {% for expense in recurring_expenses %}
+                      <li class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25">
+                          <div>
+                              <div class="fw-bold">{{ expense.title }}</div>
+                              <small class="text-muted">{{ expense.get_frequency_display }} - Due: {{ expense.next_due_date|date:"M d" }}</small>
+                          </div>
+                          <div class="text-end">
+                              <div class="text-danger fw-bold">{{ expense.amount|floatformat:0 }}</div>
+                              <a href="{% url 'learning_logs:delete_recurring_expense' expense.id %}" class="text-muted small" onclick="return confirm('Futa?');"><i class="fas fa-trash"></i></a>
+                          </div>
+                      </li>
+                      {% empty %}
+                      <li class="list-group-item bg-transparent text-muted text-center py-3">
+                          Huna matumizi ya kudumu.
+                      </li>
+                      {% endfor %}
+                  </ul>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Recent Expenses Table -->
+  <div class="card mb-4">
+      <div class="card-header">
+          <h3 class="h5 mb-0">Historia ya Matumizi</h3>
+      </div>
+      <div class="card-body p-0">
+          <div class="table-responsive">
+              <table class="table table-hover table-dark mb-0" style="background: transparent; --bs-table-bg: transparent;">
+                  <thead>
+                      <tr>
+                          <th class="ps-4">Tarehe</th>
+                          <th>Maelezo</th>
+                          <th>Kundi</th>
+                          <th>Kiasi</th>
+                          <th class="text-end pe-4">Vitendo</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for expense in expenses %}
+                      <tr>
+                          <td class="ps-4 text-muted">{{ expense.date_added|date:"M d, Y" }}</td>
+                          <td class="fw-bold">{{ expense.title }}</td>
+                          <td><span class="badge rounded-pill bg-secondary">{{ expense.category }}</span></td>
+                          <td style="color: var(--accent);">TZS {{ expense.amount|floatformat:2 }}</td>
+                          <td class="text-end pe-4">
+                              <a href="{% url 'learning_logs:edit_expense' expense.id %}" class="btn btn-sm btn-outline-light me-1"><i class="fas fa-edit"></i></a>
+                              <a href="{% url 'learning_logs:delete_expense' expense.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Una uhakika unataka kufuta?');"><i class="fas fa-trash"></i></a>
+                          </td>
+                      </tr>
+                      {% empty %}
+                      <tr>
+                          <td colspan="5" class="text-center py-4 text-muted">Hujarekodi matumizi yoyote bado.</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+
+  <!-- Chart.js Script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('expensesChart').getContext('2d');
+    const expensesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Matumizi (TZS)',
+                data: {{ chart_data|safe }},
+                borderColor: '#f72585',
+                backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#a0a0a0' } },
+                x: { grid: { display: false }, ticks: { color: '#a0a0a0' } }
+            }
+        }
+    });
+
+    const ctxPie = document.getElementById('categoryChart').getContext('2d');
+    const categoryChart = new Chart(ctxPie, {
+        type: 'doughnut',
+        data: {
+            labels: {{ pie_labels|safe }},
+            datasets: [{
+                data: {{ pie_data|safe }},
+                backgroundColor: [
+                    '#4cc9f0', '#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4895ef'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#a0a0a0' } }
+            }
+        }
+    });
+  </script>
+{% endblock content %}
