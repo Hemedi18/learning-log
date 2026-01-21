@@ -1,5 +1,5 @@
 from django import forms
-from .models import Topic, Entry, Expense, Income, FinancialGoal, RecurringExpense
+from .models import Topic, Entry, Expense, Income, FinancialGoal, RecurringExpense, Profile
 
 
 class TopicForm(forms.ModelForm):
@@ -11,9 +11,12 @@ class TopicForm(forms.ModelForm):
 class EntryForm(forms.ModelForm):
     class Meta:
         model = Entry
-        fields = ['text']
-        labels = {'text': 'Entry:'}
-        widgets = {'text': forms.Textarea(attrs={'cols': 80})}
+        fields = ['title', 'event_date', 'mood', 'content']
+        labels = {'title': 'Event Title', 'content': 'Description', 'mood': 'Category/Mood', 'event_date': 'Date & Time'}
+        widgets = {
+            'content': forms.Textarea(attrs={'cols': 80, 'rows': 3}),
+            'event_date': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+        }
 
 class ExpenseForm(forms.ModelForm):
     class Meta:
@@ -41,7 +44,7 @@ class FinancialGoalForm(forms.ModelForm):
 class RecurringExpenseForm(forms.ModelForm):
     class Meta:
         model = RecurringExpense
-        fields = ['title', 'amount', 'category', 'frequency', 'next_due_date']
+        fields = ['title', 'amount', 'category', 'frequency', 'next_due_date', 'reminder_active']
         widgets = {
             'next_due_date': forms.DateInput(attrs={'type': 'date'}),
         }
@@ -50,5 +53,11 @@ class RecurringExpenseForm(forms.ModelForm):
             'amount': 'Kiasi (TZS)',
             'category': 'Kundi',
             'frequency': 'Inajirudia',
-            'next_due_date': 'Tarehe Ijayo ya Malipo'
+            'next_due_date': 'Tarehe Ijayo ya Malipo',
+            'reminder_active': 'Weka Kikumbusho'
         }
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['image']

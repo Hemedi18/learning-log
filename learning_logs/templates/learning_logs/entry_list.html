@@ -1,0 +1,42 @@
+{% extends "learning_logs/base.html" %}
+
+{% block page_header %}
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="margin: 0;">Diary Entries</h1>
+    <a href="{% url 'learning_logs:entry_create' %}" class="btn btn--primary">
+      <i class="fas fa-plus"></i> New Entry
+    </a>
+  </div>
+{% endblock page_header %}
+
+{% block content %}
+  <div class="row">
+    {% for entry in entries %}
+      <div class="col-md-4" style="margin-bottom: 1.5rem;">
+        <div class="entry-card" style="height: 100%; display: flex; flex-direction: column;">
+          <div class="entry-card__header">
+            <h5 class="entry-card__title">{{ entry.title }}</h5>
+            <span class="entry-card__meta">{{ entry.date_created|date:"M d, Y" }}</span>
+          </div>
+          
+          {% if entry.mood %}
+            <div style="margin-bottom: 1rem;"><span class="event-pill event--{{ entry.mood|lower }}">{{ entry.mood }}</span></div>
+          {% endif %}
+
+          <p style="color: var(--text-dim); font-size: 0.9rem; flex-grow: 1; margin-bottom: 1.5rem;">
+            {{ entry.content|striptags|truncatewords:20 }}
+          </p>
+          <a href="{% url 'learning_logs:entry_detail' entry.id %}" class="btn btn--outline" style="width: 100%; text-align: center;">Read Entry</a>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div style="text-align: center; padding: 3rem; background: var(--bg-surface-2); border-radius: 16px; border: 1px dashed var(--border-light);">
+            <h3 style="color: var(--text-light); margin-bottom: 1rem;">No entries yet</h3>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Start your diary by creating your first entry.</p>
+            <a href="{% url 'learning_logs:entry_create' %}" class="btn btn--primary">Add New Entry</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock content %}

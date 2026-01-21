@@ -1,7 +1,7 @@
 {% extends "learning_logs/base.html" %}
 
 {% block page_header %}
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3 animate-fade-in">
     <div>
         <h1>Usimamizi wa Fedha</h1>
         <p class="text-muted">Fuatilia mapato, matumizi na malengo yako.</p>
@@ -26,7 +26,7 @@
 {% block content %}
   <!-- AI Suggestions Section -->
   {% if suggestions %}
-  <div class="row mb-4">
+  <div class="row mb-4 animate-slide-in" style="animation-delay: 0.1s;">
       <div class="col-12">
           <div class="card border-0" style="background: rgba(255, 255, 255, 0.03);">
               <div class="card-body">
@@ -34,7 +34,7 @@
                   <div class="row g-3">
                       {% for suggestion in suggestions %}
                       <div class="col-md-6">
-                          <div class="alert alert-{{ suggestion.type }} d-flex align-items-center mb-0" role="alert" style="background-color: rgba(var(--bs-{{ suggestion.type }}-rgb), 0.1); border: 1px solid rgba(var(--bs-{{ suggestion.type }}-rgb), 0.2); color: var(--bs-{{ suggestion.type }});">
+                          <div class="alert alert-{{ suggestion.type }} d-flex align-items-center mb-0" role="alert">
                               <i class="fas {{ suggestion.icon }} me-3 fs-4"></i>
                               <div>{{ suggestion.text }}</div>
                           </div>
@@ -48,54 +48,49 @@
   {% endif %}
 
   <!-- Financial Overview Cards -->
-  <div class="row mb-4">
+  <div class="dashboard-grid animate-slide-in" style="animation-delay: 0.2s;">
     <!-- Income Card -->
-    <div class="col-md-6 col-lg-4 mb-3">
-        <div class="card h-100 border-success border-opacity-25" style="background: rgba(25, 135, 84, 0.1);">
-            <div class="card-body">
-                <h6 class="text-success text-uppercase mb-2">Jumla ya Mapato (Mwezi huu)</h6>
-                <h3 class="fw-bold mb-0">TZS {{ total_income|floatformat:0 }}</h3>
-                <small class="text-muted">Makadirio: TZS {{ projected_income|floatformat:0 }}</small>
-            </div>
-        </div>
+    <div class="stat-card-modern income">
+        <span class="stat-label">Jumla ya Mapato</span>
+        <div class="stat-value">TZS {{ total_income|floatformat:0 }}</div>
+        <small class="text-muted d-block mt-2">Makadirio: TZS {{ projected_income|floatformat:0 }}</small>
+        <i class="fas fa-arrow-up" style="position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.5rem; color: rgba(0, 184, 148, 0.2);"></i>
     </div>
 
     <!-- Expenses Card -->
-    <div class="col-md-6 col-lg-4 mb-3">
-        <div class="card h-100 border-danger border-opacity-25" style="background: rgba(220, 53, 69, 0.1);">
-            <div class="card-body">
-                <h6 class="text-danger text-uppercase mb-2">Jumla ya Matumizi</h6>
-                <h3 class="fw-bold mb-0">TZS {{ total_expenses|floatformat:0 }}</h3>
-                <small class="text-muted">Leo: TZS {{ today_expenses|floatformat:0 }}</small>
-                {% if daily_limit_status == "Exceeded" %}
-                    <div class="badge bg-danger mt-2">Umezidi Bajeti ya Siku!</div>
-                {% else %}
-                    <div class="badge bg-success mt-2">Ndani ya Bajeti ya Siku</div>
-                {% endif %}
-            </div>
-        </div>
+    <div class="stat-card-modern expense">
+        <span class="stat-label">Jumla ya Matumizi</span>
+        <div class="stat-value">TZS {{ total_expenses|floatformat:0 }}</div>
+        <small class="text-muted d-block mt-2">Leo: TZS {{ today_expenses|floatformat:0 }}</small>
+        {% if daily_limit_status == "Exceeded" %}
+            <div class="badge bg-danger mt-2">Umezidi Bajeti ya Siku!</div>
+        {% else %}
+            <div class="badge bg-success mt-2">Ndani ya Bajeti ya Siku</div>
+        {% endif %}
+        <i class="fas fa-arrow-down" style="position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.5rem; color: rgba(255, 118, 117, 0.2);"></i>
     </div>
 
     <!-- Balance/Goals Card -->
-    <div class="col-md-12 col-lg-4 mb-3">
-        <div class="card h-100 border-primary border-opacity-25" style="background: rgba(13, 110, 253, 0.1);">
-            <div class="card-body">
-                <h6 class="text-primary text-uppercase mb-2">Baki (Akiba)</h6>
-                <h3 class="fw-bold mb-0">TZS {{ balance|floatformat:0 }}</h3>
-                <div class="mt-2">
-                    <small class="text-muted">Lengo la Akiba: TZS {{ goals.savings_goal|floatformat:0 }}</small>
-                    {% if balance >= goals.savings_goal %}
-                        <span class="text-success"><i class="fas fa-check-circle"></i> Umefikia Lengo!</span>
-                    {% else %}
-                        <span class="text-warning"><i class="fas fa-exclamation-circle"></i> Bado hujafikia</span>
-                    {% endif %}
-                </div>
-            </div>
+    <div class="stat-card-modern balance">
+        <span class="stat-label">Baki (Akiba)</span>
+        <div class="stat-value">TZS {{ balance|floatformat:0 }}</div>
+        
+        <div class="progress-track">
+            <div class="progress-fill" style="width: {{ savings_progress }}%;"></div>
         </div>
+        <div class="mt-2">
+            <small class="text-muted">Lengo: TZS {{ goals.savings_goal|floatformat:0 }}</small>
+            {% if balance >= goals.savings_goal %}
+                <span class="text-success ms-2"><i class="fas fa-check-circle"></i> Goal Reached!</span>
+            {% else %}
+                <span class="text-warning ms-2"><i class="fas fa-exclamation-circle"></i> In Progress</span>
+            {% endif %}
+        </div>
+        <i class="fas fa-wallet" style="position: absolute; right: 1.5rem; top: 1.5rem; font-size: 1.5rem; color: rgba(9, 132, 227, 0.2);"></i>
     </div>
   </div>
 
-  <div class="row mb-4">
+  <div class="row mb-4 animate-slide-in" style="animation-delay: 0.3s;">
       <!-- Chart Section -->
       <div class="col-lg-8 mb-4">
           <div class="card h-100">
@@ -125,7 +120,7 @@
       </div>
   </div>
 
-  <div class="row mb-4">
+  <div class="row mb-4 animate-slide-in" style="animation-delay: 0.4s;">
       <!-- Recurring Expenses List -->
       <div class="col-12 mb-4">
           <div class="card h-100">
@@ -136,7 +131,7 @@
               <div class="card-body p-0">
                   <ul class="list-group list-group-flush bg-transparent">
                       {% for expense in recurring_expenses %}
-                      <li class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25">
+                      <li class="list-group-item bg-transparent text-white d-flex justify-content-between align-items-center border-bottom border-secondary border-opacity-25 recurring-item" style="padding: 1rem 1.5rem;">
                           <div>
                               <div class="fw-bold">{{ expense.title }}</div>
                               <small class="text-muted">{{ expense.get_frequency_display }} - Due: {{ expense.next_due_date|date:"M d" }}</small>
@@ -158,13 +153,13 @@
   </div>
 
   <!-- Recent Expenses Table -->
-  <div class="card mb-4">
+  <div class="card mb-4 animate-slide-in" style="animation-delay: 0.5s;">
       <div class="card-header">
           <h3 class="h5 mb-0">Historia ya Matumizi</h3>
       </div>
       <div class="card-body p-0">
           <div class="table-responsive">
-              <table class="table table-hover table-dark mb-0" style="background: transparent; --bs-table-bg: transparent;">
+              <table class="table-custom">
                   <thead>
                       <tr>
                           <th class="ps-4">Tarehe</th>

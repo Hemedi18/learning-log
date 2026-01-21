@@ -1,82 +1,111 @@
 {% extends "learning_logs/base.html" %}
 
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Analytics Dashboard</h1>
+    <a href="{% url 'learning_logs:export_data' %}" class="btn btn--outline">
+        <i class="fas fa-download"></i> Export Data
+    </a>
+</div>
+{% endblock page_header %}
+
 {% block content %}
-<div class="container animate-fade-in">
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h1>Dashboard</h1>
-            <p class="text-muted">Welcome back, {{ user.username }}. Here is your learning overview.</p>
+<div class="row" style="margin-bottom: 2rem;">
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div>
+                <h3 class="h5 mb-0">Total Entries</h3>
+                <p class="display-4 mb-0">{{ entry_count }}</p>
+            </div>
         </div>
     </div>
-
-    <!-- Statistics Cards -->
-    <div class="row mb-4">
-        <div class="col-md-6 mb-4">
-            <div class="card stat-card h-100">
+    <div class="col-md-4">
+        <div class="card stat-card">
             <div class="stat-icon">
-                <i class="fas fa-book-open"></i>
+                <i class="fas fa-layer-group"></i>
             </div>
-            <div class="stat-info">
-                <h3>{{ topic_count }}</h3>
-                <p>Total Topics</p>
+            <div>
+                <h3 class="h5 mb-0">Active Topics</h3>
+                <p class="display-4 mb-0">{{ topic_count }}</p>
             </div>
-        </div>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card stat-card h-100">
-            <div class="stat-icon">
-                <i class="fas fa-pen-fancy"></i>
-            </div>
-            <div class="stat-info">
-                <h3>{{ entry_count }}</h3>
-                <p>Total Entries</p>
-            </div>
-        </div>
         </div>
     </div>
-
-    <!-- Recent Activity & Quick Actions -->
-    <div class="row">
-        <div class="col-lg-8 mb-4">
-            <div class="card h-100">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0" style="font-size: 1.2rem;">Recent Activity</h3>
-                    <a href="{% url 'learning_logs:topics' %}" class="btn btn-sm btn-outline-light">View All</a>
-                </div>
-                <div class="card-body">
-                    {% if recent_entries %}
-                        <ul style="list-style: none; padding: 0;">
-                            {% for entry in recent_entries %}
-                                <li style="padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); last-child: border-bottom: none;">
-                                    <div style="font-weight: 600; color: var(--primary-color);">{{ entry.topic }}</div>
-                                    <div style="font-size: 0.9rem; color: #ccc;">{{ entry.text|truncatewords:20 }}</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">{{ entry.date_added|date:"M d, Y" }}</div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p>No recent activity.</p>
-                    {% endif %}
-                </div>
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-heartbeat"></i>
             </div>
-        </div>
-        
-        <div class="col-lg-4 mb-4">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="mb-0" style="font-size: 1.2rem;">Quick Actions</h3>
-                </div>
-                <div class="card-body" style="display: flex; flex-direction: column; gap: 15px;">
-                    <a href="{% url 'learning_logs:new_topic' %}" class="btn btn-primary w-100">
-                        <i class="fas fa-plus"></i> New Topic
-                    </a>
-                    <a href="{% url 'learning_logs:topics' %}" class="btn btn-outline-light w-100">
-                        Browse Topics
-                    </a>
-                </div>
+            <div>
+                <h3 class="h5 mb-0">Mood Entries</h3>
+                <p class="display-4 mb-0">{{ sentiment_trend|length }}</p>
             </div>
         </div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card" style="height: 100%;">
+            <div class="card-header">
+                <h5 class="mb-0">Sentiment Trend (Last 30 Days)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="sentimentChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card" style="height: 100%;">
+            <div class="card-header">
+                <h5 class="mb-0">Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                <ul style="list-style: none; padding: 0;">
+                    {% for entry in recent_entries %}
+                    <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light);">
+                        <div style="font-weight: 600;">{{ entry.title }}</div>
+                        <div style="font-size: 0.85rem; color: var(--text-dim);">{{ entry.date_created|date:"M d, Y" }}</div>
+                    </li>
+                    {% empty %}
+                    <li class="text-muted">No recent activity.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const sentimentData = {{ sentiment_trend|safe }};
+    // Chart initialization logic will be handled here or in a separate JS file
+    // For simplicity, embedding basic config:
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('sentimentChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sentimentData.map(d => d.date),
+                datasets: [{
+                    label: 'Mood Score',
+                    data: sentimentData.map(d => d.score),
+                    borderColor: '#4cc9f0',
+                    backgroundColor: 'rgba(76, 201, 240, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, max: 10, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    });
+</script>
 {% endblock content %}
