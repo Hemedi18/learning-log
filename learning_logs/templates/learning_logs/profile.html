@@ -88,9 +88,6 @@
                     <div class="form-group">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                         {{ field }}
-                        {% if field.help_text %}
-                            <small class="helptext">{{ field.help_text|safe }}</small>
-                        {% endif %}
                         {% for error in field.errors %}
                             <div class="text-danger small mt-1">{{ error }}</div>
                         {% endfor %}

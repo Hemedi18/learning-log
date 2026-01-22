@@ -134,4 +134,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # My settings
 LOGIN_URL = 'users:login'
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = 'learning_logs:topics'
+LOGIN_REDIRECT_URL = 'learning_logs:dashboard'
